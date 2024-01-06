@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Информация о пользователе</title>
+</head>
+<body>
+
+<a href="/">На главную страницу</a>
+<h1>Информация о пользователе</h1>
+<h2 th:text="${message}" th:style="'color: red'"></h2>
+<div>
+    <p th:text="'Пользователь ID ' + ${user.getId()}"></p>
+    <p th:text="'Имя: ' + ${user.getFirstName()}"></p>
+    <p th:text="'Фамилия: ' + ${user.getLastName()}"></p>
+    <p th:text="'Email: ' + ${user.getEmail()}"></p>
+
+    <hr>
+    <p><a th:href="@{/user/edit(id=${user.getId()})}">Редактирование данных</a></p>
+    <p><a th:href="@{/user/delete(id=${user.getId()})}"> Удаление пользователя</a></p>
+    <br>
+</div>
+</body>
+</html>
