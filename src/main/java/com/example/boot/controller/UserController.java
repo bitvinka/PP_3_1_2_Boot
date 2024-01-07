@@ -3,6 +3,7 @@ package com.example.boot.controller;
 
 import com.example.boot.model.User;
 import com.example.boot.service.UserService;
+import com.example.boot.util.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class UserController {
     private final UserService userService;
+    private final UserValidator userValidator;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserValidator userValidator) {
         this.userService = userService;
+        this.userValidator = userValidator;
     }
 
 
@@ -36,10 +39,10 @@ public class UserController {
         if (id == null) {
             return "redirect:/";
         }
-        if (userService.getUserById(id) == null) {
+        if (userService.getUser(id) == null) {
             model.addAttribute("message", "Пользователя с ID " + id + " не существует. ");
         }
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", userService.getUser(id));
         return "user";
 
     }
@@ -62,6 +65,7 @@ public class UserController {
 
     @PostMapping("/addNewUser")
     public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        userValidator.validate(user, bindingResult);
         if(bindingResult.hasErrors()){
             return "newUserForm";
         }
@@ -72,12 +76,13 @@ public class UserController {
 
     @GetMapping("/user/edit")
     public String editUser(@RequestParam(value = "id") Long id, Model model) {
-        model.addAttribute("editUser", userService.getUserById(id));
+        model.addAttribute("editUser", userService.getUser(id));
         return "editUserForm";
     }
 
     @PostMapping("/user/edit")
     public String editUserForm(@ModelAttribute("editUser") @Valid User user, BindingResult bindingResult, @RequestParam(value = "id") Long id) {
+        userValidator.validate(user, bindingResult);
         if(bindingResult.hasErrors()){
             return "editUserForm";
         }

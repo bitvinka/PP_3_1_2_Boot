@@ -33,9 +33,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUser(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         return optionalUser.orElse(null);
+    }
+    public Optional<User> getUser(String email) {
+       return userRepository.findByEmail(email).stream().findAny();
+
     }
 
     @Override
