@@ -29,8 +29,7 @@ public class UserController {
 
 
     @GetMapping("/")
-    public String getMain(Model model) {
-        model.addAttribute("user", new User());
+    public String getMain() {
         return "index";
     }
 
@@ -59,7 +58,9 @@ public class UserController {
 
 
     @GetMapping("/users/new")
-    public String addUser(@ModelAttribute("user") User user) {
+    public String addUser(Model model)
+    {
+        model.addAttribute("user", new User());
         return "newUserForm";
     }
 
