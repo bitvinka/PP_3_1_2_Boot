@@ -29,9 +29,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUser(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.orElse(null);
+    public Optional<User> getUser(Long id) {
+        return  userRepository.findById(id);
+
     }
     public Optional<User> getUser(String email) {
        return userRepository.findByEmail(email).stream().findAny();

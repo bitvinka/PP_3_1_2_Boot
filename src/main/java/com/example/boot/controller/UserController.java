@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
 
 
 @Controller
 public class UserController {
     private final UserService userService;
     private final UserValidator userValidator;
+    private static final String REDIRECT = "redirect:/";
 
     @Autowired
     public UserController(UserService userService, UserValidator userValidator) {
@@ -29,31 +31,16 @@ public class UserController {
 
 
     @GetMapping("/")
-    public String getMain() {
+    public String allUsers(Model model) {
+        model.addAttribute("users", userService.getUsers());
         return "index";
     }
 
-    @GetMapping("/showUserById")
-    public String getUserById(@RequestParam(value = "id", required = false) Long id, Model model) {
-        if (id == null) {
-            return "redirect:/";
-        }
-        if (userService.getUser(id) == null) {
-            model.addAttribute("message", "Пользователя с ID " + id + " не существует. ");
-        }
-        model.addAttribute("user", userService.getUser(id));
+    @GetMapping("/user")
+    public String getUserById(@RequestParam("id") Long id, Model model){
+        Optional <User> optUser = userService.getUser(id);
+        optUser.ifPresent(user -> model.addAttribute("user", user));
         return "user";
-
-    }
-
-    @GetMapping("/users")
-    public String allUsers(Model model) {
-
-        if (userService.getUsers().isEmpty()) {
-            model.addAttribute("message", "Список пуст");
-        }
-        model.addAttribute("users", userService.getUsers());
-        return "users";
     }
 
 
@@ -71,30 +58,34 @@ public class UserController {
             return "newUserForm";
         }
         userService.addUser(user);
-        return "redirect:/users";
+        return REDIRECT;
     }
 
 
     @GetMapping("/user/edit")
     public String editUser(@RequestParam(value = "id") Long id, Model model) {
-        model.addAttribute("editUser", userService.getUser(id));
+        Optional <User> optUser = userService.getUser(id);
+        optUser.ifPresent(user -> model.addAttribute("editUser", user));
         return "editUserForm";
     }
 
     @PostMapping("/user/edit")
     public String editUserForm(@ModelAttribute("editUser") @Valid User user, BindingResult bindingResult, @RequestParam(value = "id") Long id) {
-        userValidator.validate(user, bindingResult);
+        Optional <User> optUser = userService.getUser(user.getId());
+        if(optUser.isPresent() && (!user.getEmail().equals(optUser.get().getEmail()))) {
+                userValidator.validate(user, bindingResult);
+        }
         if(bindingResult.hasErrors()){
             return "editUserForm";
         }
         userService.updateUser(id, user);
-        return "redirect:/users";
+        return REDIRECT;
     }
 
     @GetMapping("/user/delete")
     public String deleteUser(@RequestParam(value = "id") Long id) {
         userService.removeUser(id);
-        return "redirect:/users";
+        return REDIRECT;
     }
 
 

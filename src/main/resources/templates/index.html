@@ -3,19 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <style>
+        a.button {
+            display: inline-block;
+            font-family: arial,sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: rgb(68,68,68);
+            text-decoration: none;
+            user-select: none;
+            padding: .2em 1.2em;
+            outline: none;
+            border: 1px solid rgba(0,0,0,.1);
+            border-radius: 2px;
+            background: rgb(245,245,245) linear-gradient(#f4f4f4, #f1f1f1);
+            transition: all .218s ease 0s;
+        }
+        a.button:hover {
+            color: rgb(24,24,24);
+            border: 1px solid rgb(198,198,198);
+            background: #f7f7f7 linear-gradient(#f7f7f7, #f1f1f1);
+            box-shadow: 0 1px 2px rgba(0,0,0,.1);
+        }
+        a.button:active {
+            color: rgb(51,51,51);
+            border: 1px solid rgb(204,204,204);
+            background: rgb(238,238,238) linear-gradient(rgb(238,238,238), rgb(224,224,224));
+            box-shadow: 0 1px 2px rgba(0,0,0,.1) inset;
+        }
+        a.button-add {
+            font-size: 18px;
+            margin: 10px 5px;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #dddddd;
+            border-collapse: collapse;
+        }
+        .table th {
+            font-weight: bold;
+            padding: 5px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+        }
+        .table td {
+            border: 1px solid #dddddd;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
-<h1>Добро пожаловать в приложение!</h1>
-<b>Вы можете создать нового пользователя: </b>
-<a href="/users/new">Добавить пользователя</a>
-<br>
-<br>
-<b>Вы можете посмотреть всех пользователей: </b>
-<a href="/users">Список пользователей</a>
-<h2>Поиск пользователя по ID</h2>
-<form th:method="GET" th:action="@{/showUserById}" th:object="${user}">
-    <input type="text" th:name="id"/>
-    <input type="submit" value="Поиск"/>
-</form>
+<h1>Список пользователей</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Email</th>
+    </tr>
+    </thead>
+    <tfoot >
+    <tr>
+        <td colspan="6" align="left"><a class="button button-add" href="/users/new">Добавить пользователя</a></td>
+    </tr>
+    </tfoot>
+    <tbody>
+    <tr th:each ="user : ${users}">
+        <td ><a th:href="@{/user(id=${user.getId()})}" th:text="${user.getId()}"></a></td>
+        <td th:text="${user.getFirstName()}"></td>
+        <td th:text="${user.getLastName()}"></td>
+        <td th:text="${user.getEmail()}"></td>
+        <td><a class="button" th:href="@{/user/edit(id=${user.getId()})}">Редактирование</a>
+        <a class="button" th:href="@{/user/delete(id=${user.getId()})}"> Удаление</a></td>
+    </tr>
+    </tbody>
+</table>
+
 </body>
 </html>
